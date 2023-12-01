@@ -57,6 +57,5 @@ func handleRequest() {
 
 func main() {
 	fmt.Println("My Simple Client")
-
 	handleRequest()
 }
