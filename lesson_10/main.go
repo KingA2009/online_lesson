@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	jwt "github.com/dgrijalva/jwt-go"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -16,7 +17,19 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}
-	fmt.Fprintf(w, validToken)
+
+	client := &http.Client{}
+	req, _ := http.NewRequest("GET", "http://localhost:9000/", nil)
+	req.Header.Set("Token", validToken)
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %s", err.Error())
+	}
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %s", err.Error())
+	}
+	fmt.Fprintf(w, string(body))
 }
 func GenerateJWT() (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
